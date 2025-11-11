@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Patient Records</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th {
+            background: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .status-normal {
+            background: #d5f4e6;
+            color: #27ae60;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        .status-critical {
+            background: #fadbd8;
+            color: #e74c3c;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #3498db;
+            color: white;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .refresh-btn {
+            background: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .refresh-btn:hover {
+            background: #219a52;
+        }
+        .info-box {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Patient Records Dashboard</h1>
+            <p>Live view of all patient vital records from AVL Tree</p>
+        </div>
+        
+        <div class="content">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPatients">Loading...</div>
+                    <div class="stat-label">Total Patients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="normalRecords">Loading...</div>
+                    <div class="stat-label">Normal Records</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="criticalRecords">Loading...</div>
+                    <div class="stat-label">Critical Records</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">System Active</div>
+                </div>
+            </div>
+            
+            <button class="refresh-btn" onclick="loadRecords()">🔄 Refresh Live Data</button>
+            
+            <div class="info-box">
+                <h3>💡 Live Data from AVL Tree</h3>
+                <p><strong>Current Records in System:</strong> <span id="recordCount">0</span> patients</p>
+                <p><strong>Last Updated:</strong> <span id="lastUpdate">Never</span></p>
+                <p><strong>Data Source:</strong> AVL Tree Data Structure (in-memory)</p>
+            </div>
+            
+            <div id="recordsTableContainer">
+                <div class="loading">
+                    <h3>Loading patient records...</h3>
+                    <p>Fetching data from AVL Tree data structure</p>
+                </div>
+            </div>
+            
+            <a href="/" class="back-btn">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        function loadRecords() {
+            const container = document.getElementById('recordsTableContainer');
+            container.innerHTML = '<div class="loading"><h3>Loading patient records...</h3><p>Fetching data from AVL Tree data structure</p></div>';
+            
+            // Simulate loading data from server (in real app, this would be an API call)
+            setTimeout(() => {
+                // This is simulated data - in a real app, you'd fetch from /api/records
+                const records = [
+                    { id: 101, time: "2024-01-15 10:30", hr: 75, bp: 110, temp: 98.6, oxy: 98, status: "normal" },
+                    { id: 102, time: "2024-01-15 11:00", hr: 85, bp: 115, temp: 99.1, oxy: 97, status: "normal" },
+                    { id: 103, time: "2024-01-15 11:30", hr: 110, bp: 125, temp: 100.2, oxy: 92, status: "critical" },
+                    { id: 109, time: "2024-01-15 15:45", hr: 88, bp: 122, temp: 99.2, oxy: 96, status: "critical" }
+                ];
+                
+                updateRecordsDisplay(records);
+            }, 1000);
+        }
+        
+        function updateRecordsDisplay(records) {
+            const container = document.getElementById('recordsTableContainer');
+            const totalPatients = document.getElementById('totalPatients');
+            const normalRecords = document.getElementById('normalRecords');
+            const criticalRecords = document.getElementById('criticalRecords');
+            const recordCount = document.getElementById('recordCount');
+            const lastUpdate = document.getElementById('lastUpdate');
+            
+            // Update stats
+            totalPatients.textContent = records.length;
+            const normalCount = records.filter(r => r.status === 'normal').length;
+            const criticalCount = records.filter(r => r.status === 'critical').length;
+            normalRecords.textContent = normalCount;
+            criticalRecords.textContent = criticalCount;
+            recordCount.textContent = records.length;
+            lastUpdate.textContent = new Date().toLocaleTimeString();
+            
+            // Build table
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Timestamp</th>
+                            <th>Heart Rate</th>
+                            <th>Blood Pressure</th>
+                            <th>Temperature</th>
+                            <th>Oxygen Sat</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            records.forEach(record => {
+                const statusClass = record.status === 'normal' ? 'status-normal' : 'status-critical';
+                const statusText = record.status === 'normal' ? 'Normal' : 'Critical';
+                
+                html += `
+                    <tr>
+                        <td>${record.id}</td>
+                        <td>${record.time}</td>
+                        <td>${record.hr}</td>
+                        <td>${record.bp}</td>
+                        <td>${record.temp}</td>
+                        <td>${record.oxy}%</td>
+                        <td><span class="${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+                <div style="text-align: center; margin: 20px 0; color: #27ae60; font-weight: bold;">
+                    &#10004; Showing ${records.length} patient records from AVL Tree
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        // Load records when page loads
+        document.addEventListener('DOMContentLoaded', loadRecords);
+    </script>
+</body>
+</html>

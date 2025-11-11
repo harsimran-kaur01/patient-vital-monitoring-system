@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .alert-card {
+            background: #fff;
+            border-left: 5px solid #e74c3c;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        .alert-card:hover {
+            transform: translateX(5px);
+        }
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .alert-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .alert-time {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .alert-patient {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .alert-message {
+            color: #34495e;
+            line-height: 1.5;
+        }
+        .alert-critical {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+        }
+        .alert-warning {
+            border-left-color: #f39c12;
+            background: #fef9f3;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #3498db;
+            color: white;
+        }
+        .no-alerts {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        .alert-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .refresh-btn {
+            background: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .refresh-btn:hover {
+            background: #219a52;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 Alerts Dashboard</h1>
+            <p>Live critical patient vital alerts from Queue System</p>
+        </div>
+        
+        <div class="content">
+            <div class="alert-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="activeAlerts">2</div>
+                    <div class="stat-label">Active Alerts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPatients">4</div>
+                    <div class="stat-label">Total Patients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="alertRate">50%</div>
+                    <div class="stat-label">Alert Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="resolvedAlerts">0</div>
+                    <div class="stat-label">Resolved</div>
+                </div>
+            </div>
+            
+            <button class="refresh-btn" onclick="loadAlerts()">🔄 Refresh Alerts</button>
+            
+            <div id="alertsContainer">
+                <div class="alert-card alert-critical">
+                    <div class="alert-header">
+                        <div class="alert-title">🚨 CRITICAL ALERT</div>
+                        <div class="alert-time">2024-01-15 11:30</div>
+                    </div>
+                    <div class="alert-patient">Patient ID: 103</div>
+                    <div class="alert-message">
+                        Multiple abnormal vitals detected! Heart Rate: 110 bpm (High), 
+                        Blood Pressure: 125 mmHg (High), Temperature: 100.2°F (High), 
+                        Oxygen Saturation: 92% (Low). Immediate attention required.
+                    </div>
+                </div>
+                
+                <div class="alert-card alert-critical">
+                    <div class="alert-header">
+                        <div class="alert-title">🚨 CRITICAL ALERT</div>
+                        <div class="alert-time">2024-01-15 15:45</div>
+                    </div>
+                    <div class="alert-patient">Patient ID: 109</div>
+                    <div class="alert-message">
+                        Abnormal vitals detected! Blood Pressure: 122.0 mmHg (High). 
+                        Monitor patient closely and consider intervention.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="no-alerts" id="noAlertsMessage" style="display: none;">
+                <h3>🎉 No Active Alerts</h3>
+                <p>All patient vitals are within normal ranges.</p>
+            </div>
+            
+            <div style="background: #e8f4fd; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                <h3>💡 Queue System Information:</h3>
+                <p><strong>Alert Queue Status:</strong> Active with 2 critical alerts</p>
+                <p><strong>Latest Alert:</strong> Patient 109 - High Blood Pressure (122.0 mmHg)</p>
+                <p><strong>Data Source:</strong> Queue Data Structure (FIFO)</p>
+            </div>
+            
+            <a href="/" class="back-btn">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        function loadAlerts() {
+            // Simulate loading alerts from server
+            const alerts = [
+                {
+                    patient_id: 103,
+                    timestamp: "2024-01-15 11:30",
+                    message: "Multiple abnormal vitals detected! Heart Rate: 110 bpm (High), Blood Pressure: 125 mmHg (High), Temperature: 100.2°F (High), Oxygen Saturation: 92% (Low). Immediate attention required."
+                },
+                {
+                    patient_id: 109,
+                    timestamp: "2024-01-15 15:45", 
+                    message: "Abnormal vitals detected! Blood Pressure: 122.0 mmHg (High). Monitor patient closely and consider intervention."
+                }
+            ];
+            
+            updateAlertsDisplay(alerts);
+        }
+        
+        function updateAlertsDisplay(alerts) {
+            const container = document.getElementById('alertsContainer');
+            const noAlertsMessage = document.getElementById('noAlertsMessage');
+            const activeAlerts = document.getElementById('activeAlerts');
+            
+            activeAlerts.textContent = alerts.length;
+            
+            if (alerts.length === 0) {
+                container.style.display = 'none';
+                noAlertsMessage.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'block';
+            noAlertsMessage.style.display = 'none';
+            
+            let html = '';
+            alerts.forEach(alert => {
+                html += `
+                    <div class="alert-card alert-critical">
+                        <div class="alert-header">
+                            <div class="alert-title">🚨 CRITICAL ALERT</div>
+                            <div class="alert-time">${alert.timestamp}</div>
+                        </div>
+                        <div class="alert-patient">Patient ID: ${alert.patient_id}</div>
+                        <div class="alert-message">${alert.message}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Load alerts when page loads
+        document.addEventListener('DOMContentLoaded', loadAlerts);
+    </script>
+</body>
+</html>
