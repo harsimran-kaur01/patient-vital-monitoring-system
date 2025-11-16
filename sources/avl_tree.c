@@ -81,9 +81,14 @@ VitalRecord* insertVitalRecord(VitalRecord* node, VitalRecord* newRecord) {
     else if (newRecord->patient_id > node->patient_id)
         node->right = insertVitalRecord(node->right, newRecord);
     else {
-        // Same patient ID - insert based on timestamp for simplicity
-        free(newRecord);
-        return node;
+        // ✅ CHANGED: Update existing record with new values
+        strcpy(node->timestamp, newRecord->timestamp);
+        node->heart_rate = newRecord->heart_rate;
+        node->blood_pressure = newRecord->blood_pressure;
+        node->temperature = newRecord->temperature;
+        node->oxygen_saturation = newRecord->oxygen_saturation;
+        free(newRecord);  // Free the new record since we updated the existing one
+        return node;      // Return same node (no structural changes needed)
     }
 
     node->height = 1 + maximum(getHeight(node->left), getHeight(node->right));  // UPDATED
